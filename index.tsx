@@ -7,25 +7,16 @@ const DEXSCREENER_URL = `https://dexscreener.com/solana/${CONTRACT_ADDRESS}`;
 const X_URL = 'https://x.com/i/communities/2020192258524320242';
 const TIKTOK_URL = 'https://www.tiktok.com/@bunnybunniebunnybunnie/video/7640198441376746774';
 
-const GREEN = '#39ff14';
-const GREEN_DIM = 'rgba(57,255,20,0.15)';
-const GREEN_BORDER = 'rgba(57,255,20,0.25)';
-const BG = '#060a06';
+const GREEN = '#4ade80';
+const GREEN_DARK = '#16a34a';
+const GREEN_LIGHT = '#bbf7d0';
+const GREEN_PALE = '#f0fdf4';
+const GREEN_BORDER = 'rgba(74,222,128,0.35)';
+const TEXT = '#14532d';
+const TEXT_SOFT = '#4b7a5e';
+const WHITE = '#ffffff';
 
-// ── Scanline overlay ──
-function Scanlines() {
-  return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      zIndex: 9999,
-      pointerEvents: 'none',
-      backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px)',
-    }} />
-  );
-}
-
-// ── Floating particles ──
+// ── Floating bunny particles ──
 function Particles() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -36,20 +27,21 @@ function Particles() {
     if (!ctx) return;
 
     let animId: number;
-    const particles: { x: number; y: number; vx: number; vy: number; size: number; alpha: number }[] = [];
+    const particles: { x: number; y: number; vx: number; vy: number; size: number; alpha: number; shape: number }[] = [];
 
     const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
     resize();
     window.addEventListener('resize', resize);
 
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 40; i++) {
       particles.push({
         x: Math.random() * window.innerWidth,
         y: Math.random() * window.innerHeight,
-        vx: (Math.random() - 0.5) * 0.2,
-        vy: (Math.random() - 0.5) * 0.2,
-        size: Math.random() * 1.5 + 0.3,
-        alpha: Math.random() * 0.25 + 0.05,
+        vx: (Math.random() - 0.5) * 0.25,
+        vy: -Math.random() * 0.3 - 0.1,
+        size: Math.random() * 4 + 2,
+        alpha: Math.random() * 0.3 + 0.05,
+        shape: Math.floor(Math.random() * 3),
       });
     }
 
@@ -60,7 +52,7 @@ function Particles() {
         p.y = (p.y + p.vy + canvas.height) % canvas.height;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(57,255,20,${p.alpha})`;
+        ctx.fillStyle = `rgba(74,222,128,${p.alpha})`;
         ctx.fill();
       });
       animId = requestAnimationFrame(draw);
@@ -92,36 +84,40 @@ function Nav() {
   return (
     <nav style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
-      height: 68, padding: '0 24px',
+      height: 68, padding: '0 28px',
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      background: scrolled ? 'rgba(6,10,6,0.92)' : 'transparent',
-      backdropFilter: scrolled ? 'blur(16px)' : 'none',
+      background: scrolled ? 'rgba(240,253,244,0.92)' : 'transparent',
+      backdropFilter: scrolled ? 'blur(20px)' : 'none',
       borderBottom: scrolled ? `1px solid ${GREEN_BORDER}` : 'none',
       transition: 'all 0.3s',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <img src="/logo.jpeg" alt="BUNNIA" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover' }} />
+        <img src="/logo.jpeg" alt="BUNNIA" style={{
+          width: 38, height: 38, borderRadius: '50%', objectFit: 'cover',
+          border: `2px solid ${GREEN_BORDER}`,
+        }} />
         <span style={{
           fontFamily: "'Space Grotesk', sans-serif", fontSize: 20, fontWeight: 800,
-          color: GREEN, letterSpacing: '-0.5px',
-        }}>BUNNIA</span>
+          color: GREEN_DARK, letterSpacing: '-0.5px',
+        }}>bunnia</span>
         <span style={{
-          fontSize: 11, fontWeight: 700, color: BG,
-          background: GREEN, borderRadius: 4, padding: '2px 6px', marginLeft: 2,
+          fontSize: 11, fontWeight: 700, color: WHITE,
+          background: GREEN, borderRadius: 20, padding: '2px 8px',
         }}>$BUNNIA</span>
       </div>
 
       <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-        {['Evidence', 'Tokenomics', 'Community'].map(s => (
-          <a key={s} href={`#${s.toLowerCase()}`} style={{
-            color: 'rgba(255,255,255,0.55)', textDecoration: 'none',
-            fontSize: 14, fontWeight: 500, transition: 'color 0.2s',
-          }}>{s}</a>
+        {[['Evidence', '#evidence'], ['Tokenomics', '#tokenomics'], ['Community', '#community']].map(([label, href]) => (
+          <a key={label} href={href} style={{
+            color: TEXT_SOFT, textDecoration: 'none',
+            fontSize: 14, fontWeight: 600, transition: 'color 0.2s',
+          }}>{label}</a>
         ))}
         <a href={PUMP_URL} target="_blank" rel="noopener noreferrer" style={{
-          padding: '9px 22px', background: GREEN, color: BG,
-          borderRadius: 8, fontWeight: 800, fontSize: 14, textDecoration: 'none',
-          boxShadow: `0 0 18px rgba(57,255,20,0.35)`,
+          padding: '9px 22px',
+          background: `linear-gradient(135deg, ${GREEN}, #22c55e)`,
+          color: WHITE, borderRadius: 999, fontWeight: 700, fontSize: 14,
+          textDecoration: 'none', boxShadow: `0 4px 16px rgba(74,222,128,0.35)`,
         }}>Buy $BUNNIA</a>
       </div>
 
@@ -130,8 +126,8 @@ function Nav() {
       }}>
         {[0, 1, 2].map(i => (
           <div key={i} style={{
-            width: 22, height: 2, background: GREEN, marginBottom: i < 2 ? 5 : 0,
-            transition: 'all 0.3s',
+            width: 22, height: 2.5, background: GREEN_DARK, marginBottom: i < 2 ? 5 : 0,
+            borderRadius: 2, transition: 'all 0.3s',
             transform: menuOpen && i === 0 ? 'rotate(45deg) translate(5px,5px)' : menuOpen && i === 2 ? 'rotate(-45deg) translate(5px,-5px)' : 'none',
             opacity: menuOpen && i === 1 ? 0 : 1,
           }} />
@@ -141,20 +137,20 @@ function Nav() {
       {menuOpen && (
         <div style={{
           position: 'fixed', top: 68, left: 0, right: 0,
-          background: 'rgba(6,10,6,0.98)', backdropFilter: 'blur(20px)',
+          background: 'rgba(240,253,244,0.98)', backdropFilter: 'blur(20px)',
           padding: '24px', display: 'flex', flexDirection: 'column', gap: 20,
           borderBottom: `1px solid ${GREEN_BORDER}`,
         }}>
-          {['Evidence', 'Tokenomics', 'Community'].map(s => (
-            <a key={s} href={`#${s.toLowerCase()}`} onClick={() => setMenuOpen(false)}
-              style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontSize: 18, fontWeight: 500 }}>
-              {s}
+          {[['Evidence', '#evidence'], ['Tokenomics', '#tokenomics'], ['Community', '#community']].map(([label, href]) => (
+            <a key={label} href={href} onClick={() => setMenuOpen(false)}
+              style={{ color: TEXT, textDecoration: 'none', fontSize: 18, fontWeight: 600 }}>
+              {label}
             </a>
           ))}
           <a href={PUMP_URL} target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)}
             style={{
-              padding: '14px 24px', background: GREEN, color: BG,
-              borderRadius: 8, fontWeight: 800, fontSize: 16, textDecoration: 'none', textAlign: 'center',
+              padding: '14px 24px', background: GREEN, color: WHITE,
+              borderRadius: 999, fontWeight: 700, fontSize: 16, textDecoration: 'none', textAlign: 'center',
             }}>Buy $BUNNIA</a>
         </div>
       )}
@@ -177,87 +173,109 @@ function Hero() {
       minHeight: '100vh', display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       padding: '120px 24px 80px', position: 'relative', overflow: 'hidden',
+      textAlign: 'center',
     }}>
+      {/* Soft radial bg blobs */}
       <div style={{
-        position: 'absolute', top: '40%', left: '50%',
-        transform: 'translate(-50%,-50%)',
-        width: 700, height: 700,
-        background: 'radial-gradient(circle, rgba(57,255,20,0.07) 0%, transparent 70%)',
-        pointerEvents: 'none',
+        position: 'absolute', top: '20%', left: '10%', width: 500, height: 500,
+        background: 'radial-gradient(circle, rgba(74,222,128,0.12) 0%, transparent 70%)',
+        pointerEvents: 'none', borderRadius: '50%',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: '15%', right: '8%', width: 400, height: 400,
+        background: 'radial-gradient(circle, rgba(134,239,172,0.1) 0%, transparent 70%)',
+        pointerEvents: 'none', borderRadius: '50%',
       }} />
 
-      <div style={{ position: 'relative', marginBottom: 40, animation: 'float 5s ease-in-out infinite' }}>
-        <img src="/logo.jpeg" alt="BUNNIA" style={{
-          width: 200, height: 200, borderRadius: '50%', objectFit: 'cover',
-          filter: `drop-shadow(0 0 50px rgba(57,255,20,0.45))`,
-          border: `2px solid ${GREEN_BORDER}`,
-        }} />
+      {/* Mascot */}
+      <div style={{
+        position: 'relative', marginBottom: 36,
+        animation: 'float 5s ease-in-out infinite',
+      }}>
         <div style={{
-          position: 'absolute', bottom: -4, right: -4,
-          background: GREEN, color: BG, borderRadius: 20,
-          fontSize: 11, fontWeight: 800, padding: '4px 10px',
-          fontFamily: 'monospace', letterSpacing: '1px',
-        }}>ON SOLANA</div>
+          width: 220, height: 220, borderRadius: '50%',
+          background: `linear-gradient(135deg, ${GREEN_LIGHT}, #dcfce7)`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: `0 12px 48px rgba(74,222,128,0.3), 0 0 0 6px rgba(74,222,128,0.1)`,
+        }}>
+          <img src="/logo.jpeg" alt="BUNNIA" style={{
+            width: 200, height: 200, borderRadius: '50%', objectFit: 'cover',
+          }} />
+        </div>
+        <div style={{
+          position: 'absolute', bottom: 8, right: -8,
+          background: GREEN, color: WHITE, borderRadius: 20,
+          fontSize: 12, fontWeight: 800, padding: '5px 12px',
+          boxShadow: '0 4px 12px rgba(74,222,128,0.4)',
+        }}>on solana ✨</div>
+      </div>
+
+      <div style={{
+        display: 'inline-flex', alignItems: 'center', gap: 8,
+        background: GREEN_PALE, border: `1px solid ${GREEN_BORDER}`,
+        borderRadius: 999, padding: '6px 16px', marginBottom: 20,
+        fontSize: 13, color: GREEN_DARK, fontWeight: 600,
+      }}>
+        🐰 the chonkiest coin on solana
       </div>
 
       <h1 style={{
         fontFamily: "'Space Grotesk', sans-serif",
-        fontSize: 'clamp(56px, 10vw, 110px)',
-        fontWeight: 900, textAlign: 'center', lineHeight: 0.95,
-        marginBottom: 16, letterSpacing: '-3px',
-        color: '#fff',
-        textShadow: `0 0 60px rgba(57,255,20,0.3)`,
+        fontSize: 'clamp(60px, 11vw, 120px)',
+        fontWeight: 900, lineHeight: 0.95, marginBottom: 20,
+        letterSpacing: '-4px', color: TEXT,
       }}>
-        BUNNIA
+        bunnia
       </h1>
 
       <p style={{
-        fontSize: 'clamp(13px, 2vw, 17px)',
-        color: 'rgba(57,255,20,0.6)',
-        fontFamily: 'monospace', letterSpacing: '4px',
-        textTransform: 'uppercase', marginBottom: 12, textAlign: 'center',
+        fontSize: 'clamp(16px, 2vw, 20px)',
+        color: TEXT_SOFT, maxWidth: 500, lineHeight: 1.7, marginBottom: 40,
+        fontWeight: 500,
       }}>
-        SPOTTED ON SOLANA
+        it has a mugshot. it trades at 3am. it blew up the kitchen.
+        it's on solana. we don't know why. just buy it.
       </p>
 
-      <p style={{
-        fontSize: 'clamp(15px, 1.8vw, 18px)',
-        color: 'rgba(255,255,255,0.55)',
-        maxWidth: 520, textAlign: 'center', lineHeight: 1.7, marginBottom: 40,
-      }}>
-        It has a mugshot. It trades at 3am. It blew up the kitchen.
-        Nobody knows how it got here — but the cameras caught everything.
-      </p>
-
-      <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 40 }}>
+      <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 36 }}>
         <a href={PUMP_URL} target="_blank" rel="noopener noreferrer" style={{
-          padding: '15px 38px', background: GREEN, color: BG,
-          borderRadius: 12, fontWeight: 800, fontSize: 16, textDecoration: 'none',
-          boxShadow: `0 0 28px rgba(57,255,20,0.35)`,
+          padding: '16px 40px',
+          background: `linear-gradient(135deg, ${GREEN}, #22c55e)`,
+          color: WHITE, borderRadius: 999, fontWeight: 800, fontSize: 17,
+          textDecoration: 'none',
+          boxShadow: `0 8px 28px rgba(74,222,128,0.4)`,
           transition: 'transform 0.2s, box-shadow 0.2s',
-        }}>Buy on Pump.fun</a>
+        }}>Buy on Pump.fun 🚀</a>
         <a href={DEXSCREENER_URL} target="_blank" rel="noopener noreferrer" style={{
-          padding: '15px 38px', background: 'transparent', color: GREEN,
-          border: `1px solid ${GREEN_BORDER}`, borderRadius: 12, fontWeight: 600,
-          fontSize: 16, textDecoration: 'none', transition: 'all 0.2s',
-        }}>DexScreener</a>
+          padding: '16px 40px', background: WHITE, color: GREEN_DARK,
+          border: `2px solid ${GREEN_BORDER}`, borderRadius: 999,
+          fontWeight: 700, fontSize: 17, textDecoration: 'none',
+          boxShadow: '0 4px 16px rgba(74,222,128,0.15)',
+          transition: 'all 0.2s',
+        }}>Chart 📈</a>
       </div>
 
       <div onClick={copy} style={{
-        display: 'flex', alignItems: 'center', gap: 10,
-        padding: '12px 18px',
-        background: GREEN_DIM, border: `1px solid ${GREEN_BORDER}`,
-        borderRadius: 10, cursor: 'pointer', maxWidth: '90vw',
+        display: 'inline-flex', alignItems: 'center', gap: 10,
+        padding: '12px 20px',
+        background: WHITE, border: `2px solid ${GREEN_BORDER}`,
+        borderRadius: 16, cursor: 'pointer', maxWidth: '90vw',
+        boxShadow: '0 4px 16px rgba(74,222,128,0.1)',
+        transition: 'all 0.2s',
       }}>
-        <span style={{ fontSize: 10, color: 'rgba(57,255,20,0.5)', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>CA:</span>
-        <span style={{ fontSize: 'clamp(10px,1.4vw,13px)', fontFamily: 'monospace', color: 'rgba(255,255,255,0.65)', wordBreak: 'break-all' }}>{CONTRACT_ADDRESS}</span>
-        <span style={{ fontSize: 12, color: copied ? '#fff' : GREEN, fontWeight: 700, whiteSpace: 'nowrap', fontFamily: 'monospace' }}>
-          {copied ? 'COPIED' : 'COPY'}
+        <span style={{ fontSize: 11, color: TEXT_SOFT, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>CA</span>
+        <span style={{ width: 1, height: 16, background: GREEN_BORDER, display: 'block' }} />
+        <span style={{ fontSize: 'clamp(10px,1.3vw,13px)', fontFamily: 'monospace', color: TEXT_SOFT, wordBreak: 'break-all' }}>{CONTRACT_ADDRESS}</span>
+        <span style={{
+          fontSize: 12, color: copied ? GREEN_DARK : GREEN, fontWeight: 800, whiteSpace: 'nowrap',
+          background: copied ? GREEN_LIGHT : GREEN_PALE, padding: '3px 10px', borderRadius: 999,
+        }}>
+          {copied ? 'copied!' : 'copy'}
         </span>
       </div>
 
       <div style={{ position: 'absolute', bottom: 36, left: '50%', transform: 'translateX(-50%)', animation: 'bounce 2s infinite' }}>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(57,255,20,0.35)" strokeWidth="2">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={GREEN} strokeWidth="2.5" strokeLinecap="round">
           <path d="M12 5v14M5 12l7 7 7-7" />
         </svg>
       </div>
@@ -265,15 +283,15 @@ function Hero() {
   );
 }
 
-// ── Evidence / meme gallery ──
+// ── Evidence ──
 const EVIDENCE = [
-  { src: '/mugshot.jpg', label: 'EXHIBIT A', caption: 'BUNNIA — Booking #578391206', sub: 'Charges: Existing too hard on-chain' },
-  { src: '/cam-basement.jpg', label: 'CAM 04 — 03:45:12', caption: 'Spotted in the basement', sub: 'No explanation given' },
-  { src: '/cam-trading.jpg', label: 'CAM 03 — 03:17 AM', caption: 'Has been monitoring the charts', sub: 'Has not slept' },
-  { src: '/cam-kitchen.jpg', label: 'CAM 02 — UNKNOWN', caption: 'Kitchen incident', sub: 'Investigators still piecing it together' },
-  { src: '/gta.jpg', label: 'RECOVERED FILE', caption: '"AH SHIT, HERE WE GO AGAIN"', sub: "Bunnia's World. On Solana." },
-  { src: '/cam-park.jpg', label: 'CAM 07 — 03:17 AM', caption: 'Caught outside at 3am', sub: 'Pepe coin hovering overhead' },
-  { src: '/cam-office.jpg', label: 'CAM 01 — CLASSIFIED', caption: 'Working late. Again.', sub: 'Nobody hired it' },
+  { src: '/mugshot.jpg', tag: 'Exhibit A', caption: 'Booking #578391206', sub: 'Charges: existing too hard on-chain' },
+  { src: '/cam-basement.jpg', tag: 'CAM 04 — 03:45', caption: 'Spotted in the basement', sub: 'No explanation given' },
+  { src: '/cam-trading.jpg', tag: 'CAM 03 — 03:17AM', caption: 'Monitoring the charts', sub: 'Has not slept. Will not sleep.' },
+  { src: '/cam-kitchen.jpg', tag: 'Kitchen incident', caption: 'We don\'t know what happened', sub: 'Investigators are still confused' },
+  { src: '/gta.jpg', tag: 'Recovered file', caption: '"ah shit, here we go again"', sub: "bunnia's world. on solana." },
+  { src: '/cam-park.jpg', tag: 'CAM 07 — 03:17AM', caption: 'Outside at 3am. Again.', sub: 'Pepe coin spotted overhead' },
+  { src: '/cam-office.jpg', tag: 'CAM 01 — Classified', caption: 'Working late at the office', sub: "nobody hired it. it just showed up." },
 ];
 
 function Evidence() {
@@ -281,19 +299,20 @@ function Evidence() {
     <section id="evidence" style={{ padding: '100px 24px', maxWidth: 1200, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 64 }}>
         <div style={{
-          display: 'inline-block', fontFamily: 'monospace', fontSize: 11,
-          color: GREEN, letterSpacing: '4px', textTransform: 'uppercase',
-          border: `1px solid ${GREEN_BORDER}`, padding: '4px 14px', borderRadius: 4, marginBottom: 20,
-        }}>CLASSIFIED FOOTAGE</div>
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          background: GREEN_PALE, border: `1px solid ${GREEN_BORDER}`,
+          borderRadius: 999, padding: '6px 16px', marginBottom: 20,
+          fontSize: 13, color: GREEN_DARK, fontWeight: 600,
+        }}>📁 classified footage</div>
         <h2 style={{
           fontFamily: "'Space Grotesk', sans-serif",
-          fontSize: 'clamp(30px, 4vw, 52px)', fontWeight: 800, lineHeight: 1.1,
-          color: '#fff',
+          fontSize: 'clamp(32px, 5vw, 56px)', fontWeight: 800,
+          color: TEXT, lineHeight: 1.1, marginBottom: 12,
         }}>
-          The <span style={{ color: GREEN }}>Evidence</span>
+          the <span style={{ color: GREEN_DARK }}>evidence</span> 🔍
         </h2>
-        <p style={{ color: 'rgba(255,255,255,0.4)', marginTop: 12, fontSize: 15 }}>
-          Security footage recovered from multiple locations. Bunnia was present at all of them.
+        <p style={{ color: TEXT_SOFT, fontSize: 16, maxWidth: 400, margin: '0 auto' }}>
+          cameras caught everything. bunnia was present at every scene.
         </p>
       </div>
 
@@ -304,34 +323,35 @@ function Evidence() {
       }}>
         {EVIDENCE.map((e, i) => (
           <div key={i} style={{
-            background: '#0a120a',
-            border: `1px solid ${GREEN_BORDER}`,
-            borderRadius: 12,
+            background: WHITE,
+            border: `2px solid ${GREEN_BORDER}`,
+            borderRadius: 24,
             overflow: 'hidden',
+            boxShadow: '0 4px 20px rgba(74,222,128,0.08)',
             transition: 'transform 0.2s, box-shadow 0.2s',
           }}
             onMouseEnter={ev => {
-              (ev.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)';
-              (ev.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 32px rgba(57,255,20,0.12)`;
+              (ev.currentTarget as HTMLDivElement).style.transform = 'translateY(-6px)';
+              (ev.currentTarget as HTMLDivElement).style.boxShadow = '0 16px 40px rgba(74,222,128,0.2)';
             }}
             onMouseLeave={ev => {
               (ev.currentTarget as HTMLDivElement).style.transform = 'none';
-              (ev.currentTarget as HTMLDivElement).style.boxShadow = 'none';
+              (ev.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 20px rgba(74,222,128,0.08)';
             }}
           >
             <div style={{ position: 'relative' }}>
               <img src={e.src} alt={e.caption} style={{ width: '100%', display: 'block', objectFit: 'cover', aspectRatio: '1/1' }} />
               <div style={{
-                position: 'absolute', top: 10, left: 10,
-                background: 'rgba(6,10,6,0.8)', backdropFilter: 'blur(4px)',
-                border: `1px solid ${GREEN_BORDER}`, borderRadius: 4,
-                padding: '3px 8px',
-                fontFamily: 'monospace', fontSize: 10, color: GREEN, letterSpacing: '1px',
-              }}>{e.label}</div>
+                position: 'absolute', top: 12, left: 12,
+                background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)',
+                border: `1px solid ${GREEN_BORDER}`, borderRadius: 999,
+                padding: '4px 12px',
+                fontSize: 11, color: GREEN_DARK, fontWeight: 700, letterSpacing: '0.5px',
+              }}>{e.tag}</div>
             </div>
-            <div style={{ padding: '16px 18px 18px' }}>
-              <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 15, color: '#fff', marginBottom: 4 }}>{e.caption}</div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace' }}>{e.sub}</div>
+            <div style={{ padding: '16px 20px 20px' }}>
+              <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 15, color: TEXT, marginBottom: 4 }}>{e.caption}</div>
+              <div style={{ fontSize: 13, color: TEXT_SOFT }}>{e.sub}</div>
             </div>
           </div>
         ))}
@@ -342,53 +362,69 @@ function Evidence() {
 
 // ── Tokenomics ──
 function Tokenomics() {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard.writeText(CONTRACT_ADDRESS);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const stats = [
-    { label: 'Network', value: 'Solana', sub: 'Fast. Cheap. Unhinged.' },
-    { label: 'Platform', value: 'Pump.fun', sub: 'Fair launch. No presale.' },
-    { label: 'Supply', value: '1,000,000,000', sub: '1 billion $BUNNIA' },
-    { label: 'Tax', value: '0 / 0', sub: 'No buy tax. No sell tax.' },
+    { emoji: '⛓️', label: 'Network', value: 'Solana', sub: 'Fast. Cheap. Cute.' },
+    { emoji: '🚀', label: 'Platform', value: 'Pump.fun', sub: 'Fair launch. No presale.' },
+    { emoji: '🐰', label: 'Supply', value: '1,000,000,000', sub: '1 billion $BUNNIA' },
+    { emoji: '0️⃣', label: 'Tax', value: '0 / 0', sub: 'No buy or sell tax.' },
   ];
 
   return (
     <section id="tokenomics" style={{ padding: '100px 24px', maxWidth: 1100, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 56 }}>
         <div style={{
-          display: 'inline-block', fontFamily: 'monospace', fontSize: 11,
-          color: GREEN, letterSpacing: '4px', textTransform: 'uppercase',
-          border: `1px solid ${GREEN_BORDER}`, padding: '4px 14px', borderRadius: 4, marginBottom: 20,
-        }}>ON-CHAIN INTEL</div>
-        <h2 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 'clamp(30px, 4vw, 52px)', fontWeight: 800, color: '#fff' }}>
-          Token<span style={{ color: GREEN }}>omics</span>
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          background: GREEN_PALE, border: `1px solid ${GREEN_BORDER}`,
+          borderRadius: 999, padding: '6px 16px', marginBottom: 20,
+          fontSize: 13, color: GREEN_DARK, fontWeight: 600,
+        }}>📊 on-chain intel</div>
+        <h2 style={{
+          fontFamily: "'Space Grotesk', sans-serif",
+          fontSize: 'clamp(32px, 5vw, 56px)', fontWeight: 800, color: TEXT,
+        }}>
+          token<span style={{ color: GREEN_DARK }}>omics</span> ✨
         </h2>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 18 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 20 }}>
         {stats.map((s, i) => (
           <div key={i} style={{
-            background: GREEN_DIM, border: `1px solid ${GREEN_BORDER}`,
-            borderRadius: 16, padding: '32px 24px', textAlign: 'center',
+            background: WHITE, border: `2px solid ${GREEN_BORDER}`,
+            borderRadius: 24, padding: '32px 24px', textAlign: 'center',
+            boxShadow: '0 4px 16px rgba(74,222,128,0.08)',
           }}>
-            <div style={{ fontFamily: 'monospace', fontSize: 11, color: 'rgba(57,255,20,0.5)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 12 }}>{s.label}</div>
-            <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 'clamp(18px, 2.5vw, 26px)', fontWeight: 800, color: GREEN, marginBottom: 8 }}>{s.value}</div>
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', fontFamily: 'monospace' }}>{s.sub}</div>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>{s.emoji}</div>
+            <div style={{ fontSize: 11, color: TEXT_SOFT, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: 8 }}>{s.label}</div>
+            <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 'clamp(16px,2.5vw,24px)', fontWeight: 800, color: TEXT, marginBottom: 6 }}>{s.value}</div>
+            <div style={{ fontSize: 13, color: TEXT_SOFT }}>{s.sub}</div>
           </div>
         ))}
       </div>
 
-      <div style={{
-        marginTop: 40, padding: '28px 32px',
-        background: GREEN_DIM, border: `1px solid ${GREEN_BORDER}`, borderRadius: 16,
+      <div onClick={copy} style={{
+        padding: '24px 28px',
+        background: WHITE, border: `2px solid ${GREEN_BORDER}`, borderRadius: 20,
+        cursor: 'pointer', boxShadow: '0 4px 16px rgba(74,222,128,0.08)',
         display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap',
+        transition: 'box-shadow 0.2s',
       }}>
         <div style={{ flex: 1, minWidth: 200 }}>
-          <div style={{ fontFamily: 'monospace', fontSize: 11, color: 'rgba(57,255,20,0.5)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 6 }}>CONTRACT ADDRESS</div>
-          <div style={{ fontFamily: 'monospace', fontSize: 'clamp(11px, 1.2vw, 13px)', color: 'rgba(255,255,255,0.65)', wordBreak: 'break-all' }}>{CONTRACT_ADDRESS}</div>
+          <div style={{ fontSize: 11, color: TEXT_SOFT, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: 6 }}>Contract Address</div>
+          <div style={{ fontFamily: 'monospace', fontSize: 'clamp(10px,1.2vw,13px)', color: TEXT_SOFT, wordBreak: 'break-all' }}>{CONTRACT_ADDRESS}</div>
         </div>
-        <a href={`https://solscan.io/token/${CONTRACT_ADDRESS}`} target="_blank" rel="noopener noreferrer" style={{
-          padding: '10px 20px', border: `1px solid ${GREEN_BORDER}`, borderRadius: 8,
-          color: GREEN, textDecoration: 'none', fontFamily: 'monospace', fontSize: 13, fontWeight: 600,
-          whiteSpace: 'nowrap',
-        }}>View on Solscan</a>
+        <div style={{
+          background: copied ? GREEN_LIGHT : GREEN_PALE, color: GREEN_DARK,
+          border: `1px solid ${GREEN_BORDER}`, borderRadius: 999,
+          padding: '8px 18px', fontWeight: 700, fontSize: 13, whiteSpace: 'nowrap',
+          transition: 'all 0.2s',
+        }}>{copied ? 'copied! 🎉' : 'copy'}</div>
       </div>
     </section>
   );
@@ -396,68 +432,74 @@ function Tokenomics() {
 
 // ── Community ──
 function Community() {
+  const links = [
+    { href: PUMP_URL, label: 'Buy on Pump.fun 🚀', primary: true },
+    { href: DEXSCREENER_URL, label: 'Chart 📈', primary: false },
+    { href: X_URL, label: 'X Community 🐦', primary: false },
+    { href: TIKTOK_URL, label: 'TikTok 🎵', primary: false },
+  ];
+
   return (
     <section id="community" style={{ padding: '100px 24px', maxWidth: 1100, margin: '0 auto' }}>
       <div style={{
-        background: '#0a120a', border: `1px solid ${GREEN_BORDER}`, borderRadius: 24,
-        padding: 'clamp(40px, 6vw, 80px)',
+        background: `linear-gradient(135deg, ${GREEN_PALE}, #dcfce7)`,
+        border: `2px solid ${GREEN_BORDER}`, borderRadius: 32,
+        padding: 'clamp(40px, 6vw, 72px)',
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
         gap: 48, alignItems: 'center',
+        boxShadow: '0 8px 40px rgba(74,222,128,0.12)',
       }}>
         <div>
           <div style={{
-            display: 'inline-block', fontFamily: 'monospace', fontSize: 11,
-            color: GREEN, letterSpacing: '4px', textTransform: 'uppercase',
-            border: `1px solid ${GREEN_BORDER}`, padding: '4px 14px', borderRadius: 4, marginBottom: 20,
-          }}>JOIN THE OPERATION</div>
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: WHITE, border: `1px solid ${GREEN_BORDER}`,
+            borderRadius: 999, padding: '6px 16px', marginBottom: 24,
+            fontSize: 13, color: GREEN_DARK, fontWeight: 600,
+          }}>🐰 join the operation</div>
           <h2 style={{
             fontFamily: "'Space Grotesk', sans-serif",
-            fontSize: 'clamp(28px, 4vw, 46px)', fontWeight: 800, lineHeight: 1.1, marginBottom: 20, color: '#fff',
+            fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 800,
+            lineHeight: 1.1, marginBottom: 16, color: TEXT,
           }}>
-            The bunny is<br /><span style={{ color: GREEN }}>already watching.</span>
+            the bunny is<br /><span style={{ color: GREEN_DARK }}>already watching.</span>
           </h2>
-          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, marginBottom: 36 }}>
-            It was spotted on pump.fun. It's been trading since 3am.
-            The cameras can't explain it. Neither can we. Buy the token.
+          <p style={{ fontSize: 16, color: TEXT_SOFT, lineHeight: 1.8, marginBottom: 32 }}>
+            spotted on pump.fun. trading since 3am. cameras can't explain it.
+            neither can we. just buy the token. 🌿
           </p>
-          <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
-            <a href={PUMP_URL} target="_blank" rel="noopener noreferrer" style={{
-              padding: '13px 28px', background: GREEN, color: BG,
-              borderRadius: 10, fontWeight: 800, fontSize: 15, textDecoration: 'none',
-              boxShadow: `0 0 20px rgba(57,255,20,0.25)`,
-            }}>Buy $BUNNIA</a>
-            <a href={DEXSCREENER_URL} target="_blank" rel="noopener noreferrer" style={{
-              padding: '13px 28px', background: 'transparent', color: GREEN,
-              border: `1px solid ${GREEN_BORDER}`, borderRadius: 10,
-              fontWeight: 600, fontSize: 15, textDecoration: 'none',
-            }}>Chart</a>
-            <a href={X_URL} target="_blank" rel="noopener noreferrer" style={{
-              padding: '13px 28px', background: 'transparent', color: 'rgba(255,255,255,0.6)',
-              border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10,
-              fontWeight: 600, fontSize: 15, textDecoration: 'none',
-              display: 'flex', alignItems: 'center', gap: 8,
-            }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-              Community
-            </a>
-            <a href={TIKTOK_URL} target="_blank" rel="noopener noreferrer" style={{
-              padding: '13px 28px', background: 'transparent', color: 'rgba(255,255,255,0.6)',
-              border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10,
-              fontWeight: 600, fontSize: 15, textDecoration: 'none',
-              display: 'flex', alignItems: 'center', gap: 8,
-            }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/></svg>
-              TikTok
-            </a>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            {links.map(l => (
+              <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" style={{
+                padding: '12px 24px',
+                background: l.primary ? `linear-gradient(135deg, ${GREEN}, #22c55e)` : WHITE,
+                color: l.primary ? WHITE : GREEN_DARK,
+                border: l.primary ? 'none' : `2px solid ${GREEN_BORDER}`,
+                borderRadius: 999, fontWeight: 700, fontSize: 14, textDecoration: 'none',
+                boxShadow: l.primary ? '0 4px 16px rgba(74,222,128,0.35)' : '0 2px 8px rgba(74,222,128,0.1)',
+                transition: 'all 0.2s',
+              }}>{l.label}</a>
+            ))}
           </div>
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <img src="/cam-park.jpg" alt="Bunnia in the wild" style={{
-            width: '100%', maxWidth: 380, borderRadius: 16,
-            filter: `drop-shadow(0 0 30px rgba(57,255,20,0.15))`,
-            border: `1px solid ${GREEN_BORDER}`,
-          }} />
+          <div style={{
+            position: 'relative',
+            width: 'min(380px, 100%)',
+          }}>
+            <img src="/mugshot.jpg" alt="Bunnia mugshot" style={{
+              width: '100%', borderRadius: 24,
+              boxShadow: '0 16px 48px rgba(74,222,128,0.2)',
+              border: `3px solid ${WHITE}`,
+            }} />
+            <div style={{
+              position: 'absolute', bottom: -12, right: -12,
+              background: WHITE, border: `2px solid ${GREEN_BORDER}`,
+              borderRadius: 16, padding: '10px 16px',
+              fontSize: 13, fontWeight: 700, color: TEXT,
+              boxShadow: '0 8px 24px rgba(74,222,128,0.15)',
+            }}>Booking #578391206 🐾</div>
+          </div>
         </div>
       </div>
     </section>
@@ -466,41 +508,35 @@ function Community() {
 
 // ── Footer ──
 function Footer() {
-  const [copied, setCopied] = useState(false);
-  const copy = () => {
-    navigator.clipboard.writeText(CONTRACT_ADDRESS);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   return (
     <footer style={{
-      borderTop: `1px solid ${GREEN_BORDER}`,
+      borderTop: `2px solid ${GREEN_BORDER}`,
       padding: '56px 24px',
       maxWidth: 1100, margin: '0 auto',
     }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, textAlign: 'center' }}>
-        <img src="/logo.jpeg" alt="BUNNIA" style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover' }} />
-        <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 18, fontWeight: 800, color: GREEN }}>
-          BUNNIA ($BUNNIA)
-        </div>
-        <div onClick={copy} style={{
-          padding: '10px 18px', background: GREEN_DIM, border: `1px solid ${GREEN_BORDER}`,
-          borderRadius: 8, cursor: 'pointer', fontFamily: 'monospace',
-          fontSize: 'clamp(10px, 1.3vw, 12px)', color: 'rgba(255,255,255,0.45)', wordBreak: 'break-all', maxWidth: '90vw',
-        }}>
-          {CONTRACT_ADDRESS}
-          <span style={{ marginLeft: 10, color: copied ? '#fff' : GREEN, fontWeight: 700 }}>{copied ? 'COPIED' : 'COPY'}</span>
+        <img src="/logo.jpeg" alt="BUNNIA" style={{
+          width: 56, height: 56, borderRadius: '50%', objectFit: 'cover',
+          border: `3px solid ${GREEN_BORDER}`,
+          boxShadow: '0 4px 16px rgba(74,222,128,0.2)',
+        }} />
+        <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 20, fontWeight: 800, color: TEXT }}>
+          bunnia <span style={{ color: GREEN_DARK }}>($BUNNIA)</span>
         </div>
         <div style={{ display: 'flex', gap: 24, fontSize: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
-          <a href={PUMP_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.35)', textDecoration: 'none' }}>Pump.fun</a>
-          <a href={DEXSCREENER_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.35)', textDecoration: 'none' }}>DexScreener</a>
-          <a href={`https://solscan.io/token/${CONTRACT_ADDRESS}`} target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.35)', textDecoration: 'none' }}>Solscan</a>
-          <a href={X_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.35)', textDecoration: 'none' }}>X Community</a>
-          <a href={TIKTOK_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,0.35)', textDecoration: 'none' }}>TikTok</a>
+          {[
+            [PUMP_URL, 'Pump.fun'],
+            [DEXSCREENER_URL, 'DexScreener'],
+            [`https://solscan.io/token/${CONTRACT_ADDRESS}`, 'Solscan'],
+            [X_URL, 'X Community'],
+            [TIKTOK_URL, 'TikTok'],
+          ].map(([href, label]) => (
+            <a key={label} href={href} target="_blank" rel="noopener noreferrer"
+              style={{ color: TEXT_SOFT, textDecoration: 'none', fontWeight: 500 }}>{label}</a>
+          ))}
         </div>
-        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.15)', fontFamily: 'monospace' }}>
-          $BUNNIA is a meme coin with no intrinsic value. Not financial advice.
+        <p style={{ fontSize: 12, color: 'rgba(74,222,128,0.5)', fontFamily: 'monospace' }}>
+          $BUNNIA is a meme coin. not financial advice. 🐰
         </p>
       </div>
     </footer>
@@ -514,34 +550,34 @@ function GlobalStyles() {
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
       body {
-        background: ${BG};
-        color: #fff;
+        background: #f0fdf4;
+        color: ${TEXT};
         font-family: 'Inter', -apple-system, sans-serif;
         overflow-x: hidden;
       }
 
       @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-14px); }
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-16px); }
       }
       @keyframes bounce {
         0%, 100% { transform: translateX(-50%) translateY(0); }
-        50% { transform: translateX(-50%) translateY(-7px); }
+        50% { transform: translateX(-50%) translateY(-8px); }
       }
 
-      a:hover { opacity: 0.82; }
+      a:hover { opacity: 0.85; }
 
       @media (max-width: 768px) {
         .nav-links { display: none !important; }
         .mobile-menu-btn { display: block !important; }
       }
 
-      ::-webkit-scrollbar { width: 5px; }
-      ::-webkit-scrollbar-track { background: ${BG}; }
-      ::-webkit-scrollbar-thumb { background: rgba(57,255,20,0.2); border-radius: 3px; }
-      ::-webkit-scrollbar-thumb:hover { background: rgba(57,255,20,0.4); }
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: #f0fdf4; }
+      ::-webkit-scrollbar-thumb { background: ${GREEN_BORDER}; border-radius: 3px; }
+      ::-webkit-scrollbar-thumb:hover { background: ${GREEN}; }
 
-      ::selection { background: rgba(57,255,20,0.25); color: #fff; }
+      ::selection { background: rgba(74,222,128,0.3); color: ${TEXT}; }
     `}</style>
   );
 }
@@ -551,7 +587,6 @@ function App() {
   return (
     <>
       <GlobalStyles />
-      <Scanlines />
       <Particles />
       <div style={{ position: 'relative', zIndex: 2 }}>
         <Nav />
