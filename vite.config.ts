@@ -11,7 +11,7 @@ export default defineConfig({
     port: parseInt(process.env.PORT || '3000'),
     host: '0.0.0.0',
     strictPort: true,
-    allowedHosts: ['.railway.app'],
+    allowedHosts: ['.railway.app', 'bunnia.xyz', 'www.bunnia.xyz'],
   },
   plugins: [react()],
   resolve: {
